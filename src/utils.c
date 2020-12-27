@@ -56,7 +56,7 @@ double* read_csv_range(char* path, int* n, int* d, int start_row, int end_row, i
         if (col_num != end_col) {
             printf("warning: matrix columns count %d less than expected %d, adjusting matrix size\n",
                     (end_col-start_col), *d);
-            realloc(X, (end_row-start_row)*(*d)*sizeof(double));
+            X = realloc(X, (end_row-start_row)*(*d)*sizeof(double));
         } else {
             assert(*d == end_col-start_col);
         }
@@ -69,7 +69,7 @@ double* read_csv_range(char* path, int* n, int* d, int start_row, int end_row, i
     if (row_num != end_row) {
         printf("warning: matrix rows count %d less than expected %d, adjusting matrix size\n",
                 (end_row-start_row), *n);
-        realloc(X, (*n)*(*d)*sizeof(double));
+        X = realloc(X, (*n)*(*d)*sizeof(double));
     } else {
         assert(*n == end_row-start_row);
     }

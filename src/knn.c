@@ -1,11 +1,14 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include <cblas.h>
 
 #include "knn.h"
 #include "utils.h"
+
+#define BLOCK_SIZE 2
 
 knnresult make_knnresult(int m, int k) {
    knnresult ret;
@@ -77,7 +80,21 @@ void qselect(double* dist, int* idx, int k, int lo, int hi) {
     return;
 }
 
-knnresult kNN(double * X, double * Y, int n, int m, int d, int k) {
+
+// merges two knnresults in-place
+void merge_knnresults(knnresult* to, knnresult from) {
+    assert(to->k == from.k);
+
+    int m_total = to->m+from.m;
+    to->nidx = realloc(to->nidx, m_total*to->k*sizeof(int));
+    to->ndist = realloc(to->ndist, m_total*to->k*sizeof(double));
+    memcpy(to->nidx+to->m*to->k, from.nidx, from.m*from.k*sizeof(int));
+    memcpy(to->ndist+to->m*to->k, from.ndist, from.m*from.k*sizeof(double));
+    to->m = m_total;
+}
+
+// private function that actually computes kNN of a single block
+knnresult kNN_(double * X, double * Y, int n, int m, int d, int k) {
     knnresult result = make_knnresult(m,k);
     double* d_mat = dist_mat(X, Y, n, m, d);
     // tmp vars so that d_mat is not modified
@@ -103,6 +120,39 @@ knnresult kNN(double * X, double * Y, int n, int m, int d, int k) {
     free(d_mat);
 
     return result;
+}
+
+knnresult kNN(double * X, double * Y, int n, int m, int d, int k) {
+    int offset = 0;
+
+    knnresult first_res;
+    int blk_size = 0;
+    if (offset+2*BLOCK_SIZE >= m) {
+        // near end, m-offset block size
+        blk_size = m-offset;
+    } else {
+        blk_size = BLOCK_SIZE;
+    }
+    first_res = kNN_(X, Y+offset*d, n, blk_size, d, k);
+    offset += blk_size;
+
+    while (offset < m) {
+        if (offset+2*BLOCK_SIZE >= m) {
+            // near end, m-offset block size
+            blk_size = m-offset;
+
+        } else {
+            blk_size = BLOCK_SIZE;
+        }
+
+        knnresult res = kNN_(X, Y+offset*d, n, blk_size, d, k);
+        // merge with first result
+        merge_knnresults(&first_res, res);
+        free_knnresult(res);
+
+        offset += blk_size;
+    }
+    return first_res;
 }
 
 /// computes distance matrix
