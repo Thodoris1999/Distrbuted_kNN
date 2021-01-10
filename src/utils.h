@@ -12,12 +12,22 @@ void print_mat(double* X, int rows, int cols);
  * encounters end of line or end of file. End index is exclusive. Assumes all rows have the same
  * number of elements
  */
-double* read_csv_range(char* path, int* n, int* d, int start_row, int end_row, int start_col, int end_col);
+double* read_csv_range(char* path, char* delim, int* n, int* d, int start_row, int end_row, int start_col, int end_col);
 
 int line_count(char* path);
 
-int csv_col_count(char* path);
+int csv_col_count(char* path, char* delim);
 
-double* read_csv(char* path, int* n, int* d);
+double* read_csv(char* path, char* delim, int* n, int* d);
+double* read_corel_image_features(char* path, int* n, int* d);
+double* read_miniboone(char* path, int* n, int* d);
+double* read_audio_features(char* path, int* n, int* d);
+double* read_commercial_data(char* path, int* n, int* d);
+double* load_data(char* path, int type, int* n, int* d);
+
+//! Quick select
+void qselect(double* dist, int* idx, int k, int lo, int hi);
+
+double distance(double* A, double* B, int d);
 
 #endif

@@ -25,7 +25,16 @@ void print_knnresult(knnresult result);
   \return  The kNN result
 */
 knnresult kNN(double * X, double * Y, int n, int m, int d, int k);
+//! k-NN which also allows takes into account that X may be part of a larger array
+/*!
+  \param offx   offset of corpus points          [scalar]
+*/
+knnresult kNN_off(double * X, double * Y, int n, int m, int d, int k, int offx);
 double* dist_mat(double * X, double * Y, int n, int m, int d);
+
+// merge two knnresults in-place. \param to is changed to contain the k-NN from both \param to and
+// \param from
+void merge_knnresults(knnresult* to, knnresult from);
 
 knnresult make_knnresult(int m, int k);
 void free_knnresult(knnresult knn_res);
