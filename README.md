@@ -9,7 +9,7 @@
 
 `<timing_out_file>` is optional, it appends a line with the runtime to the specified file.
 
-Where `<type>` can be:
+`<type>` can be:
 - 0, for CorelImageFeatures `<datafile>`
 - 1, for MiniBoone `<datafile>`
 - 2, for audio features "feature.csv" file
