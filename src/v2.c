@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <mpi.h>
 
@@ -26,6 +27,13 @@ int main(int argc, char** argv) {
     double* Z = NULL;
     knnresult local_res;
 
+    // file for writing execution time, if provided with 4th argument (time file)
+    FILE* fp;
+    if (argc == 5) {
+        fp = fopen(argv[4], "a");
+    }
+    struct timespec ts_start, duration;
+
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &numnodes);
     MPI_Comm_rank(MPI_COMM_WORLD, &nodeid);
@@ -45,6 +53,9 @@ int main(int argc, char** argv) {
         assert(n >= k*(numnodes+1)); // required so each process has at least k neighbours
         if (n < 1000)
             print_mat(X_all, n, d);
+
+        // start timer
+        clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
         int leftovers = n % numnodes;
         int offset = 0;
@@ -151,7 +162,6 @@ int main(int argc, char** argv) {
         knnresult tmp_res = vptree_search_knn_many(vpt, Y, ny, k, offx);
         memcpy(local_res.nidx+offy*k, tmp_res.nidx, tmp_res.m*k*sizeof(int));
         memcpy(local_res.ndist+offy*k, tmp_res.ndist, tmp_res.m*k*sizeof(double));
-        print_knnresult(tmp_res);
         free_knnresult(tmp_res);
         printf("%d %d knn'd\n", nodeid, i);
 
@@ -175,7 +185,6 @@ int main(int argc, char** argv) {
     free(n_send_req);
     free(data_recv_req);
     free(data_send_req);
-    printf("vpt\n");
     free_vptree(vpt);
     printf("MPI task %d private work done. Sending to coordinator and merging...\n", nodeid);
 
@@ -215,7 +224,6 @@ int main(int argc, char** argv) {
 
         // merge
         knnresult total_res = make_knnresult(n, k);
-        //print_knnresult(total_res);
         // idx and dist are tmp vars to hold k-NN from all nodes of an element in X
         int* idx = (int*) malloc(numnodes*k*sizeof(int));
         double* dist = (double*) malloc(numnodes*k*sizeof(double));
@@ -240,8 +248,26 @@ int main(int argc, char** argv) {
         free(all_idx);
         free(all_dist);
 
-        if (n < 100)
-            print_knnresult(total_res);
+        print_knnresult(total_res);
+        // stop timer and save to file if requested
+        struct timespec ts_end;
+        clock_gettime(CLOCK_MONOTONIC, &ts_end);
+        duration.tv_sec = ts_end.tv_sec - ts_start.tv_sec;
+        duration.tv_nsec = ts_end.tv_nsec - ts_start.tv_nsec;
+        while (duration.tv_nsec > 1000000000) {
+            duration.tv_sec++;
+            duration.tv_nsec -= 1000000000;
+        }
+        while (duration.tv_nsec < 0) {
+            duration.tv_sec--;
+            duration.tv_nsec += 1000000000;
+        }
+        double dur_d = duration.tv_sec + duration.tv_nsec/1000000000.0;
+        printf("%lf", dur_d);
+        if (argc == 5 && fp) {
+            fprintf(fp, "%lf\n", dur_d);
+            fclose(fp);
+        }
 
         free_knnresult(total_res);
     } else {

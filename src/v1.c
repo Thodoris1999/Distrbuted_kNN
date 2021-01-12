@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <mpi.h>
 
@@ -25,6 +26,13 @@ int main(int argc, char** argv) {
     double* Z = NULL;
     knnresult local_res;
 
+    // file for writing execution time, if provided with 4th argument (time file)
+    FILE* fp;
+    if (argc == 5) {
+        fp = fopen(argv[4], "a");
+    }
+    struct timespec ts_start, duration;
+
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &numnodes);
     MPI_Comm_rank(MPI_COMM_WORLD, &nodeid);
@@ -44,6 +52,9 @@ int main(int argc, char** argv) {
         assert(n >= k*(numnodes+1)); // required so each process has at least k neighbours
         if (n < 1000)
             print_mat(X_all, n, d);
+
+        // start timer
+        clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
         int leftovers = n % numnodes;
         int offset = 0;
@@ -163,6 +174,7 @@ int main(int argc, char** argv) {
     if (n < 50)
         print_knnresult(local_res);
     free(X);
+    free(Y);
     free(Z);
     free(off_recv_req);
     free(off_send_req);
@@ -233,6 +245,25 @@ int main(int argc, char** argv) {
         free(all_dist);
 
         print_knnresult(total_res);
+        // stop timer and save to file if requested
+        struct timespec ts_end;
+        clock_gettime(CLOCK_MONOTONIC, &ts_end);
+        duration.tv_sec = ts_end.tv_sec - ts_start.tv_sec;
+        duration.tv_nsec = ts_end.tv_nsec - ts_start.tv_nsec;
+        while (duration.tv_nsec > 1000000000) {
+            duration.tv_sec++;
+            duration.tv_nsec -= 1000000000;
+        }
+        while (duration.tv_nsec < 0) {
+            duration.tv_sec--;
+            duration.tv_nsec += 1000000000;
+        }
+        double dur_d = duration.tv_sec + duration.tv_nsec/1000000000.0;
+        printf("%lf", dur_d);
+        if (argc == 5 && fp) {
+            fprintf(fp, "%lf\n", dur_d);
+            fclose(fp);
+        }
 
         free_knnresult(total_res);
     } else {

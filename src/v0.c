@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <time.h>
 
 #include "utils.h"
 #include "knn.h"
@@ -17,7 +18,37 @@ int main(int argc, char** argv) {
         print_mat(X, n, d);
 
     int k = atoi(argv[3]);
+    
+    // file for writing execution time, if provided with 4th argument (time file)
+    FILE* fp;
+    if (argc == 5) {
+        fp = fopen(argv[4], "a");
+    }
+    // start timer
+    struct timespec ts_start, duration;
+    clock_gettime(CLOCK_MONOTONIC, &ts_start);
 
     knnresult knnres = kNN(X, X, n, n, d, k);
+
+    // end timer
+    struct timespec ts_end;
+    clock_gettime(CLOCK_MONOTONIC, &ts_end);
+    duration.tv_sec = ts_end.tv_sec - ts_start.tv_sec;
+    duration.tv_nsec = ts_end.tv_nsec - ts_start.tv_nsec;
+    while (duration.tv_nsec > 1000000000) {
+        duration.tv_sec++;
+        duration.tv_nsec -= 1000000000;
+    }
+    while (duration.tv_nsec < 0) {
+        duration.tv_sec--;
+        duration.tv_nsec += 1000000000;
+    }
+    double dur_d = duration.tv_sec + duration.tv_nsec/1000000000.0;
+    printf("%lf", dur_d);
+    if (argc == 5 && fp) {
+        fprintf(fp, "%lf\n", dur_d);
+        fclose(fp);
+    }
+
     print_knnresult(knnres);
 }

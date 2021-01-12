@@ -233,7 +233,7 @@ void swap_(double* dist, int* idx, int idx1, int idx2) {
     idx[idx2] = tmp_idx;
 }
 
-// hoare partition scheme https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
+// lomuto partition
 int partition_(double* dist, int* idx, int lo, int hi) {
     double pivot = dist[hi-1];
     int i = lo;
