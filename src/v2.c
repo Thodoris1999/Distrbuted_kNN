@@ -212,6 +212,7 @@ int main(int argc, char** argv) {
 
         // merge
         knnresult total_res = make_knnresult(n, k);
+        print_knnresult(total_res);
         // idx and dist are tmp vars to hold k-NN from all nodes of an element in X
         int* idx = (int*) malloc(numnodes*k*sizeof(int));
         double* dist = (double*) malloc(numnodes*k*sizeof(double));
@@ -236,7 +237,8 @@ int main(int argc, char** argv) {
         free(all_idx);
         free(all_dist);
 
-        print_knnresult(total_res);
+        if (n < 100)
+            print_knnresult(total_res);
 
         free_knnresult(total_res);
     } else {

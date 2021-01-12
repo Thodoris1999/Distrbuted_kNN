@@ -3,6 +3,7 @@
 #define UTILS_H
 
 void print_mat(double* X, int rows, int cols);
+void print_arr(double* X, int n);
 
 /**
  * Reads given ranges from csv file and tries to return a row-major matrix. 

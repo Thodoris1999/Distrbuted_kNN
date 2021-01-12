@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
     int n,d;
 
-    if (argc < 2) {
+    if (argc < 4) {
         printf("too few arguments %d\n", argc);
     }
 

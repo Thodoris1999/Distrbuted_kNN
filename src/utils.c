@@ -16,6 +16,13 @@ void print_mat(double* X, int rows, int cols) {
     }
 }
 
+void print_arr(double* X, int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%lf ", X[i]);
+    }
+    printf("\n");
+}
+
 /**
  * Reads given ranges from csv file and tries to return a row-major matrix. 
  *
@@ -228,7 +235,7 @@ void swap_(double* dist, int* idx, int idx1, int idx2) {
 
 // hoare partition scheme https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
 int partition_(double* dist, int* idx, int lo, int hi) {
-    double pivot = dist[(hi+lo)/2];
+    double pivot = dist[lo];
     int i = lo-1;
     int j = hi;
 
@@ -239,7 +246,7 @@ int partition_(double* dist, int* idx, int lo, int hi) {
         do {
             j--;
         } while (dist[j] > pivot);
-        if (i >=j) {
+        if (i >= j) {
             return j;
         }
         swap_(dist, idx, i, j);
@@ -247,16 +254,16 @@ int partition_(double* dist, int* idx, int lo, int hi) {
 }
 
 void qselect(double* dist, int* idx, int k, int lo, int hi) {
-    if (lo < hi) {
-        int p = partition_(dist, idx, lo, hi);
-        if (p == k-1)
-            return;
-        else if (p > k-1)
-            qselect(dist, idx, k, lo, p-1);
-        else
-            qselect(dist, idx, k, p+1, hi);
+    int p = partition_(dist, idx, lo, hi);
+
+    if (p == k-1) {
+        return;
     }
-    return;
+    else if (p > k-1) {
+        qselect(dist, idx, k, lo, p);
+    } else {
+        qselect(dist, idx, k, p+1, hi);
+    }
 }
 
 double distance(double* A, double* B, int d) {
