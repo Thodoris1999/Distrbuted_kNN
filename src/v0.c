@@ -51,5 +51,5 @@ int main(int argc, char** argv) {
         fclose(fp);
     }
 
-    print_knnresult(knnres);
+    //print_knnresult(knnres);
 }
