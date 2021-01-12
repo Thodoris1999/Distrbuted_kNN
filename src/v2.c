@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
 
     // common work
     // build VPT
-    vptree* vpt = make_vptree(X, nx, d, 30);
+    vptree* vpt = make_vptree(X, nx, d, 110);
     // set first query set to be the same as first corpus chunk
     offz = offx;
     nz = nx;
