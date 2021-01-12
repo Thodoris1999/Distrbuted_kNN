@@ -146,9 +146,9 @@ double* read_corel_image_features(char* path, int* n, int* d) {
     return read_csv_range(path, delim, n, d, 0, line_count(path), 1, csv_col_count(path, delim));
 }
 
-double* read_miniboone(char* path, int* n, int* d) {
+double* read_miniboone(char* path, int* n, int* d, int cols) {
     char* delim = " ";
-    return read_csv_range(path, delim, n, d, 1, line_count(path), 0, csv_col_count(path, delim));
+    return read_csv_range(path, delim, n, d, 1, line_count(path), 0, cols);
 }
 
 double* read_audio_features(char* path, int* n, int* d) {
@@ -211,7 +211,7 @@ double* load_data(char* path, int type, int* n, int* d) {
     if (type == 0) {
         return read_corel_image_features(path, n, d);
     } else if (type == 1) {
-        return read_miniboone(path, n, d);
+        return read_miniboone(path, n, d, csv_col_count(path, " "));
     } else if (type == 2) {
         return read_audio_features(path, n, d);
     } else if (type == 3) {

@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
     if (nodeid == 0) {
         // coordinator initialization
         //double* X_all = read_csv_range(argv[1], ",", &n, &d, 0, 25, 0, 4);
-        double* X_all = load_data(argv[1], atoi(argv[2]), &n, &d);
+        double* X_all = read_miniboone(argv[1], &n, &d, atoi(argv[2]));
         k = atoi(argv[3]);
         assert(n >= k*(numnodes+1)); // required so each process has at least k neighbours
         if (n < 1000)
