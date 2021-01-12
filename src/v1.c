@@ -63,9 +63,9 @@ int main(int argc, char** argv) {
         for (int i = 0; i < numnodes; i++) {
             // send dimension, total n and k
             if (i != 0) {
-                MPI_Send(&d, 1, MPI_INT, next_id, d_tag, MPI_COMM_WORLD);
-                MPI_Send(&n, 1, MPI_INT, next_id, n_tag, MPI_COMM_WORLD);
-                MPI_Send(&k, 1, MPI_INT, next_id, k_tag, MPI_COMM_WORLD);
+                MPI_Send(&d, 1, MPI_INT, i, d_tag, MPI_COMM_WORLD);
+                MPI_Send(&n, 1, MPI_INT, i, n_tag, MPI_COMM_WORLD);
+                MPI_Send(&k, 1, MPI_INT, i, k_tag, MPI_COMM_WORLD);
             }
 
             // distribute chunks to all processes
@@ -244,7 +244,7 @@ int main(int argc, char** argv) {
         free(all_idx);
         free(all_dist);
 
-        print_knnresult(total_res);
+        //print_knnresult(total_res);
         // stop timer and save to file if requested
         struct timespec ts_end;
         clock_gettime(CLOCK_MONOTONIC, &ts_end);
