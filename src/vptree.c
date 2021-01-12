@@ -122,11 +122,11 @@ void recurse_search_vptree(vptree* node, double* querycoo, distance_queue* dqueu
         if (vpdist < node->m - *tau) {
             recurse_search_vptree(node->inner, querycoo, dqueue, tau);
         } 
-        if (vpdist < node->m + *tau) {
+        if (vpdist > node->m + *tau) {
             recurse_search_vptree(node->outer, querycoo, dqueue, tau);
         }
     } else {
-        if (vpdist < node->m + *tau) {
+        if (vpdist > node->m + *tau) {
             recurse_search_vptree(node->outer, querycoo, dqueue, tau);
         } 
         if (vpdist < node->m - *tau) {
