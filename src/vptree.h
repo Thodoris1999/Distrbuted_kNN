@@ -34,5 +34,6 @@ void free_vptree(vptree* tree);
 distance_queue* vptree_search_knn(vptree* tree, double* querycoo, int k, int offx);
 knnresult vptree_search_knn_many(vptree* tree, double* Y, int m, int k, int offx);
 void validate_vptree(vptree* node);
+void print_vptree(vptree* node);
 
 #endif

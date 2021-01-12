@@ -235,22 +235,17 @@ void swap_(double* dist, int* idx, int idx1, int idx2) {
 
 // hoare partition scheme https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
 int partition_(double* dist, int* idx, int lo, int hi) {
-    double pivot = dist[lo];
-    int i = lo-1;
-    int j = hi;
-
-    while(1) {
-        do {
+    double pivot = dist[hi-1];
+    int i = lo;
+    
+    for (int j = lo; j < hi; j++) {
+        if (dist[j] < pivot) {
+            swap_(dist, idx, i, j);
             i++;
-        } while (dist[i] < pivot);
-        do {
-            j--;
-        } while (dist[j] > pivot);
-        if (i >= j) {
-            return j;
         }
-        swap_(dist, idx, i, j);
     }
+    swap_(dist, idx, i, hi-1);
+    return i;
 }
 
 void qselect(double* dist, int* idx, int k, int lo, int hi) {

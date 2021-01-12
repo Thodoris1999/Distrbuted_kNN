@@ -27,7 +27,7 @@ v2: | bin
 	$(MPICC) $(CFLAGS) -o $(BINS_DIR)/$@ $(V2_SOURCES) src/v2.c $(LDFLAGS)
 
 test_vpt: | bin
-	$(MPICC) $(CFLAGS_DEBUG) -o $(BINS_DIR)/$@ $(TEST_VPT_SOURCES) src/test_vptree.c $(LDFLAGS)
+	$(CC) $(CFLAGS_DEBUG) -o $(BINS_DIR)/$@ $(TEST_VPT_SOURCES) src/test_vptree.c $(LDFLAGS)
 
 all: v0 v1 v2 test_vpt
 

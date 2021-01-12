@@ -30,6 +30,8 @@ void recurse_make_vp_tree(vptree* node, double* X, int* S_idx, int ns, int d, in
     }
 
     node->b = -1; // non-leaf
+    node->idx = NULL;
+    node->B = NULL;
     // select last point as vantage point for now
     node->vpidx = S_idx[ns-1];
     node->vpcoo = (double*) malloc(d*sizeof(double));
@@ -188,11 +190,11 @@ void validate_vptree(vptree* node) {
 }
 
 void free_vptree(vptree* tree) {
-    if (!tree->vpcoo)
+    if (tree->vpcoo)
         free(tree->vpcoo);
-    if (!tree->idx)
+    if (tree->idx)
         free(tree->idx);
-    if (!tree->B)
+    if (tree->B)
         free(tree->B);
     if (tree->inner) {
         free_vptree(tree->inner);
@@ -201,6 +203,20 @@ void free_vptree(vptree* tree) {
         free_vptree(tree->outer);
     }
     free(tree);
+}
+
+void print_vptree(vptree* node) {
+    if (node) {
+        if (node->b < 0) {
+            // non-leaf
+            printf("VP at idx %d: ", node->vpidx);
+            print_arr(node->vpcoo, node->d);
+        } else {
+            print_mat(node->B, node->b, node->d);
+        }
+        print_vptree(node->inner);
+        print_vptree(node->outer);
+    }
 }
 
 knnresult vptree_search_knn_many(vptree* tree, double* Y, int m, int k, int offx) {

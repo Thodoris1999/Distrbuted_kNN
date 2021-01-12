@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
     printf("MPI task %d initialized. Doing private work...\n", nodeid);
 
     // common work
-    // build PVT
+    // build VPT
     vptree* vpt = make_vptree(X, nx, d, 30);
     // set first query set to be the same as first corpus chunk
     offz = offx;
@@ -151,6 +151,7 @@ int main(int argc, char** argv) {
         knnresult tmp_res = vptree_search_knn_many(vpt, Y, ny, k, offx);
         memcpy(local_res.nidx+offy*k, tmp_res.nidx, tmp_res.m*k*sizeof(int));
         memcpy(local_res.ndist+offy*k, tmp_res.ndist, tmp_res.m*k*sizeof(double));
+        print_knnresult(tmp_res);
         free_knnresult(tmp_res);
         printf("%d %d knn'd\n", nodeid, i);
 
@@ -166,6 +167,7 @@ int main(int argc, char** argv) {
     if (n < 50)
         print_knnresult(local_res);
     free(X);
+    free(Y);
     free(Z);
     free(off_recv_req);
     free(off_send_req);
@@ -173,6 +175,7 @@ int main(int argc, char** argv) {
     free(n_send_req);
     free(data_recv_req);
     free(data_send_req);
+    printf("vpt\n");
     free_vptree(vpt);
     printf("MPI task %d private work done. Sending to coordinator and merging...\n", nodeid);
 
@@ -212,7 +215,7 @@ int main(int argc, char** argv) {
 
         // merge
         knnresult total_res = make_knnresult(n, k);
-        print_knnresult(total_res);
+        //print_knnresult(total_res);
         // idx and dist are tmp vars to hold k-NN from all nodes of an element in X
         int* idx = (int*) malloc(numnodes*k*sizeof(int));
         double* dist = (double*) malloc(numnodes*k*sizeof(double));
