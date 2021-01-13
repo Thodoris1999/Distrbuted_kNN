@@ -40,7 +40,7 @@ void recurse_make_vp_tree(vptree* node, double* X, int* S_idx, int ns, int d, in
     //distances from vantage point
     double* distances = (double*) malloc((ns-1)*sizeof(double));
     for (int i = 0; i < ns-1; i++) {
-        distances[i] = distance(X+d*S_idx[i], X+d*node->vpidx, d);
+        distances[i] = distance_sq(X+d*S_idx[i], X+d*node->vpidx, d);
     }
 
     // partition between median
@@ -86,7 +86,7 @@ void recurse_search_vptree(vptree* node, double* querycoo, distance_queue* dqueu
         double* distances = (double*) malloc((node->b+dqueue->size)*sizeof(double));
         int* indices = (int*) malloc((node->b+dqueue->size)*sizeof(int));
         for (int i = 0; i < node->b; i++) {
-            distances[i] = distance(querycoo, node->B + node->d*i, d);
+            distances[i] = distance_sq(querycoo, node->B + node->d*i, d);
         }
         memcpy(distances+node->b, dqueue->dist, dqueue->size*sizeof(double));
         memcpy(indices, node->idx, node->b*sizeof(int));
@@ -104,11 +104,7 @@ void recurse_search_vptree(vptree* node, double* querycoo, distance_queue* dqueu
         return;
     }
 
-    double vpdist = 0;
-    for (int i = 0; i < d; i++) {
-        vpdist += (querycoo[i] - node->vpcoo[i]) * (querycoo[i] - node->vpcoo[i]);
-    }
-    vpdist = sqrt(vpdist);
+    double vpdist = distance_sq(querycoo, node->vpcoo, d);
 
     if (vpdist < *tau) {
         *tau = vpdist;
@@ -155,14 +151,14 @@ void validate_vptree(vptree* node) {
         if (node->inner) {
             if (node->inner->vpcoo) {
                 // inner child's vantage point must be closer than median
-                double dist = distance(node->vpcoo, node->inner->vpcoo, node->d);
+                double dist = distance_sq(node->vpcoo, node->inner->vpcoo, node->d);
                 if (dist >= node->m)
                     printf("Invalid inner child vantage point, distance %lf, median %lf\n", dist, node->m);
             }
             if (node->inner->b >= 0) {
                 // leaf inner node. All leaf buckets must be close than median
                 for (int i = 0; i < node->inner->b; i++) {
-                    double dist = distance(node->vpcoo, node->inner->B+i*node->d, node->d);
+                    double dist = distance_sq(node->vpcoo, node->inner->B+i*node->d, node->d);
                     if (dist >= node->m)
                         printf("Invalid inner child bucket point at idx %d, distance %lf, median %lf\n", i, dist, node->m);
                 }
@@ -172,14 +168,14 @@ void validate_vptree(vptree* node) {
         if (node->outer) {
             if (node->outer->vpcoo) {
                 // outer child's vantage point must be further than median
-                double dist = distance(node->vpcoo, node->outer->vpcoo, node->d);
+                double dist = distance_sq(node->vpcoo, node->outer->vpcoo, node->d);
                 if (dist <= node->m)
                     printf("Invalid outer child vantage point, distance %lf, median %lf\n", dist, node->m);
             }
             if (node->outer->b < 0) {
                 // leaf inner node. All leaf buckets must be close than median
                 for (int i = 0; i < node->outer->b; i++) {
-                    double dist = distance(node->vpcoo, node->outer->B+i*node->d, node->d);
+                    double dist = distance_sq(node->vpcoo, node->outer->B+i*node->d, node->d);
                     if (dist <= node->m)
                         printf("Invalid outer child bucket point at idx %d, distance %lf, median %lf\n", i, dist, node->m);
                 }

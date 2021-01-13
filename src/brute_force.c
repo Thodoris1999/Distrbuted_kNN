@@ -13,8 +13,7 @@ int main(int argc, char** argv) {
     }
 
     // double* X = read_csv_range(argv[1], ",", &n, &d, 0, 5, 0, 2);
-    double* X = read_miniboone(argv[1], &n, &d, atoi(argv[2]));
-    //double* X = load_data(argv[1], atoi(argv[2]), &n, &d);
+    double* X = load_data(argv[1], atoi(argv[2]), &n, &d);
     if (n < 1000)
         print_mat(X, n, d);
 
@@ -51,6 +50,6 @@ int main(int argc, char** argv) {
         fclose(fp);
     }
 
-    //print_knnresult(knnres);
+    print_knnresult(knnres);
     free_knnresult(knnres);
 }

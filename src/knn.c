@@ -205,3 +205,23 @@ double* dist_mat(double * X, double * Y, int n, int m, int d) {
 
     return d_mat;
 }
+
+knnresult kNN_brute_force(double * X, double * Y, int n, int m, int d, int k) {
+    knnresult res = make_knnresult(m, k);
+    double* distances = (double*) malloc(n*sizeof(double));
+    int* indices = (int*) malloc(n*sizeof(int));
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            distances[i] = distance_sq(X+d*j, Y+d*i, d);
+            indices[i] = j;
+        }
+
+        qselect(distances, indices, k, 0, n);
+
+        memcpy(res.ndist, distances, k*sizeof(double));
+        memcpy(res.nidx, indices, k*sizeof(int));
+    }
+    free(indices);
+    free(distances);
+    return res;
+}

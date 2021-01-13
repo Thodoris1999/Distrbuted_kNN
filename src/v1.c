@@ -244,7 +244,8 @@ int main(int argc, char** argv) {
         free(all_idx);
         free(all_dist);
 
-        //print_knnresult(total_res);
+        if (n < 100)
+            print_knnresult(total_res);
         // stop timer and save to file if requested
         struct timespec ts_end;
         clock_gettime(CLOCK_MONOTONIC, &ts_end);
