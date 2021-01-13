@@ -22,7 +22,7 @@ int csv_col_count(char* path, char* delim);
 double* read_csv(char* path, char* delim, int* n, int* d);
 double* read_corel_image_features(char* path, int* n, int* d);
 double* read_miniboone(char* path, int* n, int* d, int cols);
-double* read_audio_features(char* path, int* n, int* d);
+double* read_audio_features(char* path, int* n, int* d, int rows);
 double* read_commercial_data(char* path, int* n, int* d);
 double* load_data(char* path, int type, int* n, int* d);
 
