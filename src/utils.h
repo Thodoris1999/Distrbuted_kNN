@@ -29,6 +29,6 @@ double* load_data(char* path, int type, int* n, int* d);
 //! Quick select
 void qselect(double* dist, int* idx, int k, int lo, int hi);
 
-double distance(double* A, double* B, int d);
+double distance_sq(double* A, double* B, int d);
 
 #endif

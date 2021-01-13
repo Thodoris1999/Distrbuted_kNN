@@ -25,6 +25,7 @@ void print_knnresult(knnresult result);
   \return  The kNN result
 */
 knnresult kNN(double * X, double * Y, int n, int m, int d, int k);
+knnresult kNN_brute_force(double * X, double * Y, int n, int m, int d, int k);
 //! k-NN which also allows takes into account that X may be part of a larger array
 /*!
   \param offx   offset of corpus points          [scalar]

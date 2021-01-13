@@ -261,11 +261,10 @@ void qselect(double* dist, int* idx, int k, int lo, int hi) {
     }
 }
 
-double distance(double* A, double* B, int d) {
+double distance_sq(double* A, double* B, int d) {
     double dist = 0;
     for (int i = 0; i < d; i++) {
         dist += (A[i] - B[i]) * (A[i] - B[i]);
     }
-    dist = sqrt(dist);
     return dist;
 }

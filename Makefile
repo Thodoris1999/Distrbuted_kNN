@@ -28,8 +28,11 @@ v2: | bin
 
 test_vpt: | bin
 	$(CC) $(CFLAGS_DEBUG) -o $(BINS_DIR)/$@ $(TEST_VPT_SOURCES) src/test_vptree.c $(LDFLAGS)
+        
+brute_force: | bin
+	$(CC) $(CFLAGS_DEBUG) -o $(BINS_DIR)/$@ $(SOURCES) src/brute_force.c $(LDFLAGS)
 
-all: v0 v1 v2 test_vpt
+all: v0 v1 v2 test_vpt brute_force
 
 clean:
 	rm -rf $(BINS_DIR)
